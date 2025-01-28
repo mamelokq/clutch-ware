@@ -1,0 +1,23 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/mamelokq/clutch-ware/refs/heads/main/script"))()
+
+getgenv().goodstuff = {
+    ["KEYBINDS"] ={
+            stomp = Enum.KeyCode.X, -- Change Stomp Keybind
+      bring = Enum.KeyCode.B, -- Change Bring Keybind
+      down = Enum.KeyCode.K, -- Change Down Keybind
+      buy = Enum.KeyCode.Y, -- Change Buy Gun Keybind
+      cframe = Enum.KeyCode.Insert, -- Change Speed Keybind
+      fly = Enum.KeyCode.Insert, -- Change Fly Keybind
+      teleport = Enum.KeyCode.F, -- Change TP Keybind
+      target = Enum.KeyCode.G, -- Change Target Keybind
+      Loopkill = Enum.KeyCode.P, -- Change Loop Keybind
+      stop = Enum.KeyCode.V, -- Change Cancel Keybind
+      openui = Enum.KeyCode.Insert, -- Change UI Keybind
+      view = Enum.KeyCode.J -- Change View Keybind
+
+    }
+
+}
+
+script_key="RvjNhNxpeHWfJOYuGQstuAFhlPwigsEn";
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/8e2f72f6097e1d002dc2a3ce975ff8bf.lua"))()
