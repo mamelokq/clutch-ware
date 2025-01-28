@@ -2,7 +2,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/mamelokq/clutch-ware/
 
 getgenv().goodstuff = {
     ["KEYBINDS"] ={
-            stomp = Enum.KeyCode.X, -- Change Stomp Keybind
+      stomp = Enum.KeyCode.X, -- Change Stomp Keybind
       bring = Enum.KeyCode.B, -- Change Bring Keybind
       down = Enum.KeyCode.K, -- Change Down Keybind
       buy = Enum.KeyCode.Y, -- Change Buy Gun Keybind
@@ -11,7 +11,7 @@ getgenv().goodstuff = {
       teleport = Enum.KeyCode.F, -- Change TP Keybind
       target = Enum.KeyCode.G, -- Change Target Keybind
       Loopkill = Enum.KeyCode.P, -- Change Loop Keybind
-      stop = Enum.KeyCode.V, -- Change Cancel Keybind
+      stop = Enum.KeyCode.N, -- Change Cancel Keybind
       openui = Enum.KeyCode.Insert, -- Change UI Keybind
       view = Enum.KeyCode.J -- Change View Keybind
 
