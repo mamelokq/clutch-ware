@@ -1,0 +1,191 @@
+-- Persistent No-Clip Script
+local player = game.Players.LocalPlayer
+
+-- Function to handle no-clip
+local function noClip(character)
+    game:GetService("RunService").Stepped:Connect(function()
+        if character and character.Parent then
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+-- Initial character no-clip
+if player.Character then
+    noClip(player.Character)
+end
+
+-- Re-enable no-clip on respawn
+player.CharacterAdded:Connect(function(character)
+    noClip(character)
+end)
+
+--chatspy
+enabled = true --chat "/spy" to toggle!
+spyOnMyself = true --if true will check your messages too
+public = false --if true will chat the logs publicly (fun, risky)
+publicItalics = true --if true will use /me to stand out
+privateProperties = { --customize private logs
+	Color = Color3.fromRGB(0,255,255); 
+	Font = Enum.Font.SourceSansBold;
+	TextSize = 18;
+}
+ 
+
+local StarterGui = game:GetService("StarterGui")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer or Players:GetPropertyChangedSignal("LocalPlayer"):Wait() or Players.LocalPlayer
+local saymsg = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest")
+local getmsg = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("OnMessageDoneFiltering")
+local instance = (_G.chatSpyInstance or 0) + 1
+_G.chatSpyInstance = instance
+ 
+local function onChatted(p,msg)
+	if _G.chatSpyInstance == instance then
+		if p==player and msg:lower():sub(1,4)=="/spy" then
+			enabled = not enabled
+			wait(0.3)
+			privateProperties.Text = "{SPY "..(enabled and "EN" or "DIS").."ABLED}"
+			StarterGui:SetCore("ChatMakeSystemMessage",privateProperties)
+		elseif enabled and (spyOnMyself==true or p~=player) then
+			msg = msg:gsub("[\n\r]",''):gsub("\t",' '):gsub("[ ]+",' ')
+			local hidden = true
+			local conn = getmsg.OnClientEvent:Connect(function(packet,channel)
+				if packet.SpeakerUserId==p.UserId and packet.Message==msg:sub(#msg-#packet.Message+1) and (channel=="All" or (channel=="Team" and public==false and Players[packet.FromSpeaker].Team==player.Team)) then
+					hidden = false
+				end
+			end)
+			wait(1)
+			conn:Disconnect()
+			if hidden and enabled then
+				if public then
+					saymsg:FireServer((publicItalics and "/me " or '').."{SPY} [".. p.Name .."]: "..msg,"All")
+				else
+					privateProperties.Text = "{SPY} [".. p.Name .."]: "..msg
+					StarterGui:SetCore("ChatMakeSystemMessage",privateProperties)
+				end
+			end
+		end
+	end
+end
+ 
+for _,p in ipairs(Players:GetPlayers()) do
+	p.Chatted:Connect(function(msg) onChatted(p,msg) end)
+end
+Players.PlayerAdded:Connect(function(p)
+	p.Chatted:Connect(function(msg) onChatted(p,msg) end)
+end)
+privateProperties.Text = "{SPY "..(enabled and "EN" or "DIS").."ABLED}"
+StarterGui:SetCore("ChatMakeSystemMessage",privateProperties)
+if not player.PlayerGui:FindFirstChild("Chat") then wait(3) end
+local chatFrame = player.PlayerGui.Chat.Frame
+chatFrame.ChatChannelParentFrame.Visible = true
+chatFrame.ChatBarParentFrame.Position = chatFrame.ChatChannelParentFrame.Position+UDim2.new(UDim.new(),chatFrame.ChatChannelParentFrame.Size.Y)
+--chatspy
+------------------------------------------------------------------------------------------
+
+-- speed
+
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local player = game.Players.LocalPlayer
+local speedEnabled = false
+local SpeedValue = 4
+
+-- Function to toggle speed with 'T' key
+local function onInputBegan(input, isProcessed)
+    if isProcessed then return end
+    if input.KeyCode == Enum.KeyCode.T then
+        speedEnabled = not speedEnabled
+    end
+end
+
+UserInputService.InputBegan:Connect(onInputBegan)
+
+-- Update speed on heartbeat
+RunService.Heartbeat:Connect(function()
+    if speedEnabled then
+        player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + player.Character.Humanoid.MoveDirection * SpeedValue
+    end
+end)
+-- speed
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Fly Script with Velocity Reset
+local player = game.Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local FlySpeed = 500 -- Adjust the speed as needed
+local FlyLoop
+local flying = false
+
+-- Function to check if the player is typing (in chat or text box)
+local function isTyping()
+    return UserInputService:GetFocusedTextBox() ~= nil
+end
+
+local function startFlying()
+    if not FlyLoop then
+        FlyLoop = RunService.Stepped:Connect(function()
+            spawn(function()
+                pcall(function()
+                    local speed = FlySpeed
+                    local velocity = Vector3.new(0, 1, 0) -- Always maintain upward velocity to hover
+
+                    if not isTyping() then
+                        -- Only allow movement if not typing
+                        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                            velocity = velocity + (workspace.CurrentCamera.CFrame.LookVector * speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                            velocity = velocity + (workspace.CurrentCamera.CFrame.RightVector * -speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                            velocity = velocity + (workspace.CurrentCamera.CFrame.LookVector * -speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                            velocity = velocity + (workspace.CurrentCamera.CFrame.RightVector * speed)
+                        end
+                    end
+
+                    -- Set the velocity to keep the player hovering in place
+                    player.Character.HumanoidRootPart.Velocity = velocity
+                    player.Character.Humanoid:ChangeState("Freefall")
+                end)
+            end)
+        end)
+    end
+end
+
+local function stopFlying()
+    if FlyLoop then
+        FlyLoop:Disconnect()
+        FlyLoop = nil
+        -- Reset velocity to prevent gliding
+        player.Character.HumanoidRootPart.Velocity = Vector3.zero
+        player.Character.Humanoid:ChangeState("Landing")
+    end
+end
+
+-- Toggle fly with "V" key, but only if not typing
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.V and not isTyping() then
+        flying = not flying
+        if flying then
+            startFlying()
+        else
+            stopFlying()
+        end
+    end
+end)
+
+-- Return functions to control flying
+return {
+    StartFlying = startFlying,
+    StopFlying = stopFlying
+}
