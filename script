@@ -273,7 +273,7 @@ local SpeedValue = 4
 -- Function to toggle speed with 'T' key
 local function onInputBegan(input, isProcessed)
     if isProcessed then return end
-    if input.KeyCode == Enum.KeyCode.T then
+    if input.KeyCode == Enum.KeyCode.Z then
         speedEnabled = not speedEnabled
     end
 end
